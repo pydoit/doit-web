@@ -25,7 +25,7 @@ class JsHint:
             'file_dep': [config_file, js_file],
             }
 
-    def tasks(self, group, patterns, exclude=(), options=None):
+    def tasks(self, patterns, group='all', exclude=(), options=None):
         """yield tasks as given by pattern
 
         @param group: (str) name of a group
