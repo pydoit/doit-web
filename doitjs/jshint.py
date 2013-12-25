@@ -3,6 +3,7 @@ import copy
 
 from pathlib import Path
 from mergedict import ConfigDict
+from doit.tools import config_changed
 
 
 
@@ -42,13 +43,22 @@ class JsHint:
         if options:
             cfg.merge(options)
         config_file = '_hint_{}.json'.format(group)
-        with open(config_file, 'w') as fp:
-            json.dump(cfg, fp, indent=4, sort_keys=True)
+        def write_config():
+            with open(config_file, 'w') as fp:
+                json.dump(cfg, fp, indent=4, sort_keys=True)
+        yield {
+            'name': config_file,
+            'actions': [write_config],
+            'targets': [config_file],
+            'uptodate': [config_changed(cfg)],
+            }
 
         # yield a task for every js file in selection
         base = Path('.')
         excluded = set([base.joinpath(e) for e in exclude])
         for pattern in patterns:
             for src in base.glob(pattern):
+                if src.match('.#*'): # emacs tmp files
+                    continue
                 if src not in excluded:
                     yield self(config_file, str(src))
