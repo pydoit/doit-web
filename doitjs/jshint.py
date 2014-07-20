@@ -42,6 +42,8 @@ class JsHint:
         cfg = ConfigDict(copy.deepcopy(self._config))
         if options:
             cfg.merge(options)
+        # FIXME do generate another hint.json file for 'all' group if
+        # no options given
         config_file = '_hint_{}.json'.format(group)
         def write_config():
             with open(config_file, 'w') as fp:
@@ -58,6 +60,7 @@ class JsHint:
         excluded = set([base.joinpath(e) for e in exclude])
         for pattern in patterns:
             for src in base.glob(pattern):
+                # FIXME add a exclude pattern to __init__
                 if src.match('.#*'): # emacs tmp files
                     continue
                 if src not in excluded:
