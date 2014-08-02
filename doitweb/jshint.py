@@ -16,6 +16,7 @@ class JsHint(BaseCommand):
         @param config: (str) config path
         """
         super(JsHint, self).__init__(options=opts)
+        self.config_file = config
         if config:
             with open(config, 'r') as fp:
                 self._config = ConfigDict(json.load(fp))
@@ -51,26 +52,23 @@ class JsHint(BaseCommand):
         cfg = ConfigDict(copy.deepcopy(self._config))
         if options:
             cfg.merge(options)
-        # FIXME do generate another hint.json file for 'all' group if
-        # no options given
-        config_file = '_hint_{}.json'.format(group)
-        def write_config():
-            with open(config_file, 'w') as fp:
-                json.dump(cfg, fp, indent=4, sort_keys=True)
-        yield {
-            'name': config_file,
-            'actions': [write_config],
-            'targets': [config_file],
-            'uptodate': [config_changed(cfg)],
-            }
+            config_file = '_hint_{}.json'.format(group)
+            def write_config():
+                with open(config_file, 'w') as fp:
+                    json.dump(cfg, fp, indent=4, sort_keys=True)
+            yield {
+                'name': config_file,
+                'actions': [write_config],
+                'targets': [config_file],
+                'uptodate': [config_changed(cfg)],
+                }
+        else:
+            config_file = self.config_file
 
         # yield a task for every js file in selection
         base = Path('.')
         excluded = set([base.joinpath(e) for e in exclude])
         for pattern in patterns:
             for src in base.glob(pattern):
-                # FIXME add a exclude pattern to __init__
-                if src.match('.#*'): # emacs tmp files
-                    continue
                 if src not in excluded:
                     yield self(config_file, str(src))
