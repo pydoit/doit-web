@@ -4,27 +4,36 @@ import copy
 from pathlib import Path
 from mergedict import ConfigDict
 from doit.tools import config_changed
+from doitcmd import BaseCommand
 
 
 
-class JsHint:
-    def __init__(self, config=None):
+class JsHint(BaseCommand):
+    cmd_template = 'jshint {opts} {js_file}'
+
+    def __init__(self, config=None, **opts):
         """
         @param config: (str) config path
         """
+        super(JsHint, self).__init__(options=opts)
         if config:
             with open(config, 'r') as fp:
                 self._config = ConfigDict(json.load(fp))
         else:
             self._config = {}
 
+
     def __call__(self, config_file, js_file):
         """return task metada to jshint single file"""
+        opts = self.opt_str(self.options, {'config': config_file})
+        cmd = self.cmd_template.format(opts=opts, js_file=js_file)
+
         return {
             'name': js_file,
-            'actions': ['jshint --config {} {}'.format(config_file, js_file)],
+            'actions': [cmd],
             'file_dep': [config_file, js_file],
             }
+
 
     def tasks(self, patterns, group='all', exclude=(), options=None):
         """yield tasks as given by pattern

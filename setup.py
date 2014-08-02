@@ -13,7 +13,12 @@ setup (
     platforms = ['any'],
     license = 'MIT',
     packages = ['doitweb'],
-    install_requires = ['doit', 'pathlib', 'mergedict'],
+    install_requires = [
+        'doit',
+        'pathlib',
+        'mergedict',
+        'doit-cmd >=0.1, <0.2',
+        ],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
