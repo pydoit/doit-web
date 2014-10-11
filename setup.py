@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from setuptools import setup
+
+install_requires = [
+    'doit',
+    'mergedict',
+    'configclass >=0.1, <0.2',
+    'doit-cmd >=0.1, <0.2',
+    ],
+
+if sys.version_info[0] < 3 or sys.version_info[1] < 4:
+    install_requires.append('pathlib')
+
 
 setup (
     name = 'doit-web',
@@ -13,12 +25,7 @@ setup (
     platforms = ['any'],
     license = 'MIT',
     packages = ['doitweb'],
-    install_requires = [
-        'doit',
-        'pathlib',
-        'mergedict',
-        'doit-cmd >=0.1, <0.2',
-        ],
+    install_requires = install_requires,
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -26,8 +33,6 @@ setup (
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
